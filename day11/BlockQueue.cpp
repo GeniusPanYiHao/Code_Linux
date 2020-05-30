@@ -65,6 +65,7 @@ class BlockQueue
 
     pthread_cond_t ConsumeCond;
     pthread_cond_t ProduceCond;
+};
     void* Consume_Start(void* arg)
     {
       BlockQueue* bq=(BlockQueue*)arg;
@@ -83,7 +84,6 @@ class BlockQueue
       int i=0;
       while(1)
       {
-          int data;
           bq->push(i);
           printf("Produce_Start[%p][%d]\n",pthread_self(),i);
 
@@ -92,7 +92,6 @@ class BlockQueue
       return NULL;
     }
 
-};
 
 int main()
 {
