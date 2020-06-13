@@ -4,6 +4,7 @@
 #include<netinet/in.h>
 #include<sys/socket.h>
 #include<string>
+#include<stdlib.h>
 #include<arpa/inet.h>
 class udpsvr
 {
@@ -53,7 +54,7 @@ class udpsvr
      }
      return true;
     }
-    bool Recv(struct sockaddr_in* srcaddr)
+    bool Recv(std::string& buf,struct sockaddr_in* srcaddr)
     {
       char tmp[1024]={0};
       socklen_t socklen=sizeof(struct sockaddr_in);
@@ -63,6 +64,7 @@ class udpsvr
         perror("recvfrom");
         return false;
       }
+      buf.assign(tmp,recvSize);
       return true;
     }
 
