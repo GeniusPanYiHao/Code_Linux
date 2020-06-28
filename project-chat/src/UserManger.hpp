@@ -21,7 +21,7 @@ class UserInfo
 {
   public:
     //:注册登录阶段用的是TCP
-    UserInfo(const std::string& NickName,const std::string& School,uint64_t& UserId,const std::string& PassWord)
+    UserInfo(const std::string& NickName,const std::string& School,uint32_t& UserId,const std::string& PassWord)
     {
       NickName_=NickName;
       School_=School;
@@ -34,6 +34,14 @@ class UserInfo
     void SetUserStatus(int status)
     {
       UserStatus_=status;
+    }
+    std::string GetPassWord()
+    {
+      return PassWord_;
+    }
+    int& GetUserStatus()
+    {
+      return UserStatus_;
     }
   private:
   std::string NickName_;
@@ -61,7 +69,7 @@ class UserManger
     {
       pthread_mutex_destroy(&Lock_);
     }
-    int Register(const std::string& NickName, const std::string& School, const std::string& Password, uint64_t* UserId)
+    int Register(const std::string& NickName, const std::string& School, const std::string& Password, uint32_t* UserId)
     {
           if(NickName.size() == 0 || School.size() == 0|| Password.size() == 0)
            {
@@ -78,13 +86,43 @@ class UserManger
           pthread_mutex_unlock(&Lock_);
           return 0;
     }
-    int Register()
+    int Login(const uint32_t& UserId,const std::string& Password)
     {
-
-    }
-    int Login()
-    {
-
+        if(Password.size()<0)
+        {
+          return -1;
+        }
+        int LoginStatus=-1;
+        //:返回登录的状态
+        //1.现在map中查找是否存在这样的id
+        //不存在/存在/密码正确/密码不正确
+        std::unordered_map<uint32_t,UserInfo>::iterator iter;
+        pthread_mutex_lock(&Lock_);
+        iter=UserMap_.find(UserId);
+        if(iter!=UserMap_.end())
+        {
+          //:查找到了
+          if(Password==iter->second.GetPassWord())
+          {
+            //:密码正确
+            iter->second.GetUserStatus()=USERLOGINED;
+            LoginStatus=0;
+          }
+        else
+        {
+          //:密码错误
+          LOG(ERROR,"UserId Password is not correct password is");
+          LoginStatus=-1;
+        }
+        }
+        else
+        {
+          //:没有查找到
+          LOG(ERROR,"UserID NOT found");
+          LoginStatus=-1;
+        }
+        pthread_mutex_unlock(&Lock_);
+        return LoginStatus;
     }
     int LoginOut()
     {
@@ -92,10 +130,10 @@ class UserManger
     }
   private:
     //:保存所有注册用户的信息  TCP
-    std::unordered_map<uint64_t,UserInfo> UserMap_;
+    std::unordered_map<uint32_t,UserInfo> UserMap_;
     pthread_mutex_t Lock_;
     //:保存在线用户的信息  Udp
     std::vector<UserInfo> OnlineUserVec_;
     //:预分配的用户id
-    uint64_t PrepareUserId_;
+    uint32_t PrepareUserId_;
 };

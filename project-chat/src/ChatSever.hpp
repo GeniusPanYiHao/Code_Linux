@@ -195,7 +195,7 @@ class ChatSever
       LOG(ERROR,"client shutdown connect");
       return NULL;
     }
-    int UserId=-1;
+    uint32_t UserId=-1;
     int UserStatus=-1;
     //:正常接收到一个请求标识
     switch(QuestType)
@@ -219,7 +219,20 @@ class ChatSever
         break;
     }
   //:响应(send)
- return NULL;
+  ReplyInfo ri;
+  ri.Status=UserStatus;
+  ri.UserId_=UserId;
+  ssize_t sendsize=send(lc->GetTcpSock(),&ri,sizeof(ri),0);
+  if(sendsize<0)
+  {
+    //:如果数据发送失败了就要考虑应用层重新发送
+    LOG(ERROR,"sendMsg failed");
+  }
+  LOG(INFO,"sendMsg success");
+  //:将tcp连接释放掉
+  close(lc->GetTcpSock());
+  delete lc;
+   return NULL;
    }
    void Recv()
    {
@@ -262,7 +275,7 @@ class ChatSever
     }
    }
 
-   int DealRegister(int sock,int* UserId)
+   int DealRegister(int sock,uint32_t* UserId)
    {
       //:接收注册请求
       Reg ri;
@@ -276,8 +289,13 @@ class ChatSever
       {
         LOG(ERROR,"client shutdowm connect");
       }
-      UserMAnger->Register();
+     int ret=UserMAnger->Register(ri.NickName,ri.School,ri.PassWord,UserId);
       //调用用户管理模块进行注册请求的处理
+      if(ret==-1)
+      {
+        return REGF;
+      }
+      return REGISTERED;
       //返回注册成功后给用户的id
       //返回当前状态
    }
@@ -294,7 +312,12 @@ class ChatSever
       {
         LOG(ERROR,"client shutdowm connect");
       }
-      UserMAnger->Login();
+      int ret=UserMAnger->Login(li.UserId,li.PassWord);
+      if(ret<0)
+      {
+        return LOGF;
+      }
+      return LOGIN;
    }
    int DealLoginOut()
    {

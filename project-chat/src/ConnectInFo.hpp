@@ -1,6 +1,6 @@
 #pragma once
 #include<iostream>
-
+#include"UserManger.hpp"
 #define REG 0
 #define LOGIN 1
 #define LOGINOUT 2
@@ -32,7 +32,7 @@ enum UserStatus
 struct ReplyInfo
 {
   int Status;
-  uint32_t UserId;
+  uint32_t UserId_;
 };
 
 class LoginConnect
