@@ -43,7 +43,23 @@ class UserInfo
     {
       return UserStatus_;
     }
-  private:
+    void SetCliAddrInFo(const struct sockaddr_in& CliAddr)
+    {
+      memcpy(&Cliaddr_,&CliAddr,sizeof(CliAddr));
+    }
+    void SetCliAddrLen(const socklen_t& CliAddrLen)
+    {
+      Cliaddrlen_=CliAddrLen;
+    }
+    struct sockaddr_in& GetCliAddrInfo()
+    {
+      return Cliaddr_;
+    }
+    socklen_t& GetCliAddrLen()
+    {
+      return Cliaddrlen_;
+    }
+    private:
   std::string NickName_;
   std::string School_;
   //:用户Id
@@ -64,6 +80,7 @@ class UserManger
       UserMap_.clear();
       OnlineUserVec_.clear();
       pthread_mutex_init(&Lock_,NULL);
+      PrepareUserId_=0;
     }
     ~UserManger()
     {
@@ -127,6 +144,55 @@ class UserManger
     int LoginOut()
     {
 
+    }
+    bool IsLogin(uint32_t UserId,const struct sockaddr_in& CliAddr,const socklen_t& CliAddrlen)
+    {
+          if(sizeof(CliAddr)<0||CliAddrlen<0)
+          {
+            return false;
+          }
+          //:检测当前用户是否存在
+          std::unordered_map<uint32_t,UserInfo>::iterator iter;
+          pthread_mutex_lock(&Lock_);
+          iter=UserMap_.find(UserId);
+          if(iter==UserMap_.end())
+          {
+            pthread_mutex_unlock(&Lock_);
+            LOG(ERROR,"User not exist");
+            return false;
+          }
+          //:判断当前用户状态，来判断是否完成登录和注册
+          if(iter->second.GetUserStatus()==ONLINE||iter->second.GetUserStatus()==REGISTERED)
+          {
+            pthread_mutex_unlock(&Lock_);
+            LOG(ERROR,"User Status error");
+            return false;
+          }
+          //：判断当前用户是否是第一次发送消息
+          if(iter->second.GetUserStatus()==ONLINE)
+          {
+            pthread_mutex_unlock(&Lock_);
+            return true;
+          }
+          //:第一次发送消息
+          if(iter->second.GetUserStatus()==USERLOGINED)
+          {
+            //:增加地址信息，地址信息长度，改变状态为ONLINE
+            iter->second.SetCliAddrInFo(CliAddr);
+            iter->second.SetCliAddrLen(CliAddrlen);
+            iter->second.SetUserStatus(ONLINE);
+
+            OnlineUserVec_.push_back(iter->second);
+          }
+          pthread_mutex_unlock(&Lock_);
+
+          return true;
+
+          
+    }
+    void GetOnlineUserInfo(std::vector<UserInfo>* vec)
+    {
+      *vec=OnlineUserVec_;
     }
   private:
     //:保存所有注册用户的信息  TCP

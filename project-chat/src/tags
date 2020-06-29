@@ -1,0 +1,105 @@
+!_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
+!_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+!_TAG_PROGRAM_AUTHOR	Darren Hiebert	/dhiebert@users.sourceforge.net/
+!_TAG_PROGRAM_NAME	Exuberant Ctags	//
+!_TAG_PROGRAM_URL	http://ctags.sourceforge.net	/official site/
+!_TAG_PROGRAM_VERSION	5.8	//
+BroadcastMsg	ChatSever.hpp	/^   void BroadcastMsg()$/;"	f	class:ChatSever
+Capacity	MsgPool.hpp	/^    size_t Capacity;$/;"	m	class:MsgPool
+ChatSever	ChatSever.hpp	/^    ChatSever()$/;"	f	class:ChatSever
+ChatSever	ChatSever.hpp	/^class ChatSever$/;"	c
+Cliaddr_	UserManger.hpp	/^  struct sockaddr_in Cliaddr_;$/;"	m	class:UserInfo	typeref:struct:UserInfo::sockaddr_in
+Cliaddrlen_	UserManger.hpp	/^  socklen_t Cliaddrlen_;$/;"	m	class:UserInfo
+ConQue	MsgPool.hpp	/^    pthread_cond_t ConQue;$/;"	m	class:MsgPool
+ConsumeStart	ChatSever.hpp	/^   static void* ConsumeStart(void* arg)$/;"	f	class:ChatSever
+DEBUG	LogSever.hpp	/^  DEBUG$/;"	e	enum:LogLevel
+DealLogin	ChatSever.hpp	/^   int DealLogin(int sock)$/;"	f	class:ChatSever
+DealLoginOut	ChatSever.hpp	/^   int DealLoginOut()$/;"	f	class:ChatSever
+DealRegister	ChatSever.hpp	/^   int DealRegister(int sock,uint32_t* UserId)$/;"	f	class:ChatSever
+ERROR	LogSever.hpp	/^  ERROR,$/;"	e	enum:LogLevel
+FATAL	LogSever.hpp	/^  FATAL,$/;"	e	enum:LogLevel
+GetPassWord	UserManger.hpp	/^    std::string GetPassWord()$/;"	f	class:UserInfo
+GetServer	ConnectInFo.hpp	/^    void* GetServer()$/;"	f	class:LoginConnect
+GetTcpSock	ConnectInFo.hpp	/^    int GetTcpSock()$/;"	f	class:LoginConnect
+GetTimeStamp	LogSever.hpp	/^    static int64_t GetTimeStamp()$/;"	f	class:LogTime
+GetTimeStamp	LogSever.hpp	/^    static void GetTimeStamp(std::string& timestamp)$/;"	f	class:LogTime
+GetUserStatus	UserManger.hpp	/^    int& GetUserStatus()$/;"	f	class:UserInfo
+INFO	LogSever.hpp	/^  INFO=0,$/;"	e	enum:LogLevel
+InitSever	ChatSever.hpp	/^    void InitSever()$/;"	f	class:ChatSever
+LOG	LogSever.hpp	64;"	d
+LOGF	ConnectInFo.hpp	/^  LOGF,\/\/：登录失败$/;"	e	enum:UserStatus
+LOGIN	ConnectInFo.hpp	5;"	d
+LOGINOUT	ConnectInFo.hpp	6;"	d
+LOGS	ConnectInFo.hpp	/^  LOGS\/\/：登录成功$/;"	e	enum:UserStatus
+Level	LogSever.hpp	/^const char* Level[]=$/;"	v
+Lock_	UserManger.hpp	/^    pthread_mutex_t Lock_;$/;"	m	class:UserManger
+Log	LogSever.hpp	/^inline std::ostream& Log(LogLevel lev,const char* file,int line,const std::string& logmsg)$/;"	f
+LogLevel	LogSever.hpp	/^enum LogLevel$/;"	g
+LogTime	LogSever.hpp	/^class LogTime$/;"	c
+Login	ConnectInFo.hpp	/^struct Login$/;"	s
+Login	UserManger.hpp	/^    int Login(const uint32_t& UserId,const std::string& Password)$/;"	f	class:UserManger
+LoginConnect	ConnectInFo.hpp	/^    LoginConnect(int Sock,void* Server)$/;"	f	class:LoginConnect
+LoginConnect	ConnectInFo.hpp	/^class LoginConnect$/;"	c
+LoginOut	UserManger.hpp	/^    int LoginOut()$/;"	f	class:UserManger
+LoginReg	ChatSever.hpp	/^   static void* LoginReg(void* arg)$/;"	f	class:ChatSever
+MESSAGE_MAX_SIZE	ConnectInFo.hpp	7;"	d
+MSG_POOL_SIZE	MsgPool.hpp	7;"	d
+MsgPool	MsgPool.hpp	/^    MsgPool()$/;"	f	class:MsgPool
+MsgPool	MsgPool.hpp	/^class MsgPool$/;"	c
+MsgPool_	ChatSever.hpp	/^    MsgPool* MsgPool_;$/;"	m	class:ChatSever
+MsgQueLock	MsgPool.hpp	/^    pthread_mutex_t MsgQueLock;$/;"	m	class:MsgPool
+MsgQue_	MsgPool.hpp	/^      std::queue<std::string> MsgQue_;$/;"	m	class:MsgPool
+NickName	ConnectInFo.hpp	/^    char NickName[10];$/;"	m	struct:Reg
+NickName_	UserManger.hpp	/^  std::string NickName_;$/;"	m	class:UserInfo
+OFFLINE	UserManger.hpp	14;"	d
+ONLINE	UserManger.hpp	17;"	d
+OnlineUserVec_	UserManger.hpp	/^    std::vector<UserInfo> OnlineUserVec_;$/;"	m	class:UserManger
+PassWord	ConnectInFo.hpp	/^      char PassWord[15];$/;"	m	struct:Login
+PassWord	ConnectInFo.hpp	/^    char PassWord[15];$/;"	m	struct:Reg
+PassWord_	UserManger.hpp	/^  std::string PassWord_;$/;"	m	class:UserInfo
+PopMsg	MsgPool.hpp	/^    void PopMsg(std::string *msg)$/;"	f	class:MsgPool
+PrepareUserId_	UserManger.hpp	/^    uint32_t PrepareUserId_;$/;"	m	class:UserManger
+ProQue	MsgPool.hpp	/^    pthread_cond_t ProQue;$/;"	m	class:MsgPool
+ProductStart	ChatSever.hpp	/^   static void* ProductStart(void* arg)$/;"	f	class:ChatSever
+PushMsg	MsgPool.hpp	/^    void PushMsg(std::string &msg)$/;"	f	class:MsgPool
+REG	ConnectInFo.hpp	4;"	d
+REGF	ConnectInFo.hpp	/^  REGF=0,\/\/:注册失败$/;"	e	enum:UserStatus
+REGISTERED	UserManger.hpp	15;"	d
+REGS	ConnectInFo.hpp	/^  REGS,\/\/:注册成功$/;"	e	enum:UserStatus
+Recv	ChatSever.hpp	/^   void Recv()$/;"	f	class:ChatSever
+Reg	ConnectInFo.hpp	/^struct Reg$/;"	s
+Register	UserManger.hpp	/^    int Register(const std::string& NickName, const std::string& School, const std::string& Password, uint32_t* UserId)$/;"	f	class:UserManger
+ReplyInfo	ConnectInFo.hpp	/^struct ReplyInfo$/;"	s
+School	ConnectInFo.hpp	/^    char School[10];$/;"	m	struct:Reg
+School_	UserManger.hpp	/^  std::string School_;$/;"	m	class:UserInfo
+SendMsg	ChatSever.hpp	/^   void SendMsg(const std::string msg,struct sockaddr_in& cliaddr,socklen_t &len)$/;"	f	class:ChatSever
+Server_	ConnectInFo.hpp	/^      void* Server_;$/;"	m	class:LoginConnect
+SetUserStatus	UserManger.hpp	/^    void SetUserStatus(int status)$/;"	f	class:UserInfo
+Sock_	ConnectInFo.hpp	/^      int Sock_;$/;"	m	class:LoginConnect
+Start	ChatSever.hpp	/^    void Start()$/;"	f	class:ChatSever
+Status	ConnectInFo.hpp	/^  int Status;$/;"	m	struct:ReplyInfo
+TCPPORT	ChatSever.hpp	15;"	d
+THREADCOUNT	ChatSever.hpp	14;"	d
+TcpPort_	ChatSever.hpp	/^    int TcpPort_;$/;"	m	class:ChatSever
+TcpSock_	ChatSever.hpp	/^    int TcpSock_;$/;"	m	class:ChatSever
+UDPPORT	ChatSever.hpp	13;"	d
+USERLOGINED	UserManger.hpp	16;"	d
+UdpPort_	ChatSever.hpp	/^    int UdpPort_;$/;"	m	class:ChatSever
+UdpSock_	ChatSever.hpp	/^    int UdpSock_;$/;"	m	class:ChatSever
+UserId	ConnectInFo.hpp	/^      uint32_t UserId;\/\/:用户id$/;"	m	struct:Login
+UserId_	ConnectInFo.hpp	/^  uint32_t UserId_;$/;"	m	struct:ReplyInfo
+UserId_	UserManger.hpp	/^  uint64_t UserId_;$/;"	m	class:UserInfo
+UserInfo	UserManger.hpp	/^    UserInfo(const std::string& NickName,const std::string& School,uint32_t& UserId,const std::string& PassWord)$/;"	f	class:UserInfo
+UserInfo	UserManger.hpp	/^class UserInfo$/;"	c
+UserMAnger	ChatSever.hpp	/^    UserManger* UserMAnger;$/;"	m	class:ChatSever
+UserManger	UserManger.hpp	/^    UserManger()$/;"	f	class:UserManger
+UserManger	UserManger.hpp	/^class UserManger$/;"	c
+UserMap_	UserManger.hpp	/^    std::unordered_map<uint32_t,UserInfo> UserMap_;$/;"	m	class:UserManger
+UserStatus	ConnectInFo.hpp	/^enum UserStatus$/;"	g
+UserStatus_	UserManger.hpp	/^  int UserStatus_;$/;"	m	class:UserInfo
+WARNING	LogSever.hpp	/^  WARNING,$/;"	e	enum:LogLevel
+isFull	MsgPool.hpp	/^    bool isFull()$/;"	f	class:MsgPool
+main	ChatSever.cpp	/^int main()$/;"	f
+~ChatSever	ChatSever.hpp	/^    ~ChatSever()$/;"	f	class:ChatSever
+~MsgPool	MsgPool.hpp	/^    ~MsgPool()$/;"	f	class:MsgPool
+~UserManger	UserManger.hpp	/^    ~UserManger()$/;"	f	class:UserManger

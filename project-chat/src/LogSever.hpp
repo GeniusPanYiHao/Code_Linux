@@ -50,7 +50,7 @@ class LogTime
 
     }
 };
-inline void Log(LogLevel lev,const char* file,int line,const std::string& logmsg)
+inline std::ostream& Log(LogLevel lev,const char* file,int line,const std::string& logmsg)
     {
       std::string level_info=Level[lev];
       std::string timer_stamp;
@@ -58,7 +58,7 @@ inline void Log(LogLevel lev,const char* file,int line,const std::string& logmsg
       LogTime::GetTimeStamp(timer_stamp);
 
       //[时间 info/waning/error/fatal/debug文件 行号]具体的错误信息
-      std::cout<<"["<<timer_stamp<<" "<<level_info<<" "<<file<<":"<<line<<"]"<<logmsg<<std::endl;
-
+      std::cout<<"["<<timer_stamp<<" "<<level_info<<" "<<file<<":"<<line<<"]"<<logmsg;
+      return std::cout;
  }
      #define LOG(lev,msg) Log(lev,__FILE__,__LINE__,msg)
