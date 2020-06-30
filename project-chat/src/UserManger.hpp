@@ -16,7 +16,6 @@
 #define USERLOGINED 2
 #define ONLINE 3
 
-
 class UserInfo
 {
   public:
@@ -131,7 +130,7 @@ class UserManger
           LOG(ERROR,"UserId Password is not correct password is");
           LoginStatus=-1;
         }
-        }
+      }
         else
         {
           //:没有查找到
