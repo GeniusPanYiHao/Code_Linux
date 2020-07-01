@@ -14,6 +14,10 @@
 #define UDPPORT 17777
 #define THREADCOUNT 2
 #define TCPPORT 17779
+//:当前类实现：
+//1.接收客户端数据
+//2.发送数据消息给客户端
+//依赖UDP协议进行实现
 class ChatSever
 {
   public:
@@ -77,7 +81,7 @@ class ChatSever
       if(!UserMAnger)
       { 
         LOG(FATAL,"create usermanger failed")<<std::endl;
-        exit(8);
+        exit(4);
       }
       //；创建TCP socket
       TcpSock_=socket(AF_INET,SOCK_STREAM,IPPROTO_TCP);
@@ -86,6 +90,8 @@ class ChatSever
         LOG(FATAL,"create TcpSock failed")<<std::endl;
         exit(5);
       }
+      int opt=1;
+      setsockopt(TcpSock_,SOL_SOCKET,SO_REUSEADDR,&opt,sizeof(opt));
       struct sockaddr_in tcpaddr;
       tcpaddr.sin_family=AF_INET;
       tcpaddr.sin_port=htons(TcpPort_);
@@ -100,7 +106,7 @@ class ChatSever
       ret=listen(TcpSock_,5);
       if(ret<0)
       {
-        LOG(FATAL,"listen failed")<<std::endl;
+        LOG(FATAL,"tcp listen failed")<<std::endl;
         exit(7);
       }
       LOG(INFO,"TCP listen 0.0.0.0:17779")<<std::endl;
@@ -116,13 +122,13 @@ class ChatSever
           if(ret<0)
           {
             LOG(FATAL,"pthread_create new thread failed")<<std::endl;
-            exit(4);
+            exit(8);
           }
           ret=pthread_create(&tid,NULL,ConsumeStart,(void*)this);
           if(ret<0)
           {
             LOG(FATAL,"pthread_create new thread failed")<<std::endl;
-            exit(0);
+            exit(9);
       }
         }
       LOG(INFO,"UdpChat service start syccess")<<std::endl;
@@ -162,6 +168,7 @@ class ChatSever
       ChatSever* cs=(ChatSever*)arg;
       while(1)
       {
+          //:recvfrom udp数据
           cs->Recv();
       }
       return NULL;
@@ -172,6 +179,7 @@ class ChatSever
      ChatSever* cs=(ChatSever*)arg;
      while(1)
      {
+       //:sendto udp
         cs->BroadcastMsg();
 
      }
@@ -189,7 +197,8 @@ class ChatSever
     ssize_t recvsize= recv(lc->GetTcpSock(),&QuestType,1,0);
     if(recvsize<0)
     {
-      LOG(ERROR,"recvive tag failed")<<std::endl;
+      LOG(ERROR,"recvive tagtype failed")<<std::endl;
+      return NULL;
     }
     else if(recvsize==0)
     {
@@ -209,6 +218,7 @@ class ChatSever
         {
         //:使用用户管理模块的登录
        UserStatus=cs->DealLogin(lc->GetTcpSock());
+       printf("UserStatus:%d\n",UserStatus);
         break;
         }
       case LOGINOUT:
@@ -216,6 +226,7 @@ class ChatSever
         cs->DealLoginOut();
         break;
       default:
+        UserStatus=REGF;
         LOG(ERROR,"recvive Request types failed")<<std::endl;
         break;
     }
@@ -278,6 +289,14 @@ class ChatSever
     //: SendMsg()
      std::string msg;
       MsgPool_->PopMsg(&msg);
+      std::vector<UserInfo> OnlineUserVec;
+      UserMAnger->GetOnlineUserInfo(&OnlineUserVec);
+      std::vector<UserInfo>::iterator iter=OnlineUserVec.begin();
+      for(;iter!=OnlineUserVec.end();iter++)
+      {
+        //:SendMsg(msg,udp地址信息，udp地址信息长度)
+        SendMsg(msg,iter->GetCliAddrInfo(),iter->GetCliAddrLen());
+      }
    }
    //:给一个客户端发送消息的接口
    void SendMsg(const std::string msg,struct sockaddr_in& cliaddr,socklen_t &len)
@@ -308,6 +327,7 @@ class ChatSever
       {
         LOG(ERROR,"client shutdowm connect")<<std::endl;
       }
+
      int ret=UserMAnger->Register(ri.NickName,ri.School,ri.PassWord,UserId);
       //调用用户管理模块进行注册请求的处理
       if(ret==-1)
@@ -332,8 +352,9 @@ class ChatSever
         LOG(ERROR,"client shutdowm connect")<<std::endl;
       }
       int ret=UserMAnger->Login(li.UserId,li.PassWord);
-      if(ret<0)
+      if(ret==-1)
       {
+        LOG(ERROR,"User Login failed")<<std::endl;
         return LOGF;
       }
       return LOGIN;
