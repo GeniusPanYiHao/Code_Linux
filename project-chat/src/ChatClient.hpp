@@ -12,7 +12,7 @@
 #include"LogSever.hpp"
 #include"ConnectInFo.hpp"
 #define UDPPORT 17777
-#define TCPPORT 17778
+#define TCPPORT 17779
 
 struct Myself
 {
@@ -51,6 +51,7 @@ class ChatClient
     }
     bool Connect2Server()
     {
+      //:创建tcp socket
       TcpSock_=socket(AF_INET,SOCK_STREAM,IPPROTO_TCP);
       if(TcpSock_<0)
       {
@@ -79,13 +80,14 @@ class ChatClient
       {
         return false;
       }
-      char type=REGISTERED;
+      char type=REG;
       ssize_t send_size=send(TcpSock_,&type,1,0);
       if(send_size<0)
       {
         LOG(ERROR,"Send Register type failed")<<std::endl;
         return false;
       }
+      //:发送注册内容
       struct Reg ri;
       std::cout<<"Please Enter Your NickName:";
       std::cin>>ri.NickName;
@@ -130,7 +132,7 @@ class ChatClient
 
       }
 
-      if(resp.Status != REGISTERED)
+      if(resp.Status != REGS)
       {
         LOG(ERROR, "Register Failed") << std::endl;
         return false;

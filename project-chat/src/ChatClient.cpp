@@ -27,7 +27,7 @@ int main(int argc,char* argv[])
     std::cout<<"Please select service:";
     fflush(stdout);
     std::cin>>Select;
-    if(Select==-1)
+    if(Select==1)
     {
       //：注册
       if(!cc->Register())
