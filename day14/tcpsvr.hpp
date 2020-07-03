@@ -2,6 +2,7 @@
 #include<iostream>
 #include<unistd.h>
 #include<string>
+#include<string.h>
 #include<stdlib.h>
 #include<sys/socket.h>
 #include<arpa/inet.h>
@@ -74,24 +75,57 @@ class TcpSvr
         
 
     }
-    bool Accept(TcpSvr ts,struct sockaddr_in* addr=NULL)
+    bool Accept(TcpSvr& ts,struct sockaddr_in* addr=NULL)
     {
       struct sockaddr_in peeraddr;
       socklen_t addrlen=sizeof(struct sockaddr_in);
-    }
-    bool Recv()
-    {
+      int newsock=accept(Sock,(struct sockaddr*)&peeraddr,&addrlen);
+      if(newsock<0)
+      {
+        return false;
+      }
+      ts.Sock=newsock;
+      if(addr!=NULL)
+      {
+        memcpy(addr,&peeraddr,addrlen);
+      }
+      return true;
 
     }
+    bool Recv(std::string& buffer)
+    { 
+        char buf[1024]={0};
+        int ret=recv(Sock,buf,sizeof(buf)-1,0);
+        if(ret<0)
+        {
+            perror("recv failed");
+            return false;
+        }
+        else if(ret==0)
+        {
+          //:对端连接将关闭
+          printf("peer close this connect");
+          return false;
+        }
+        buffer.assign(buf,ret);
+        return true;
+    }
 
-    bool send()
+    bool Send(std::string buffer)
     {
-
+        int ret=send(Sock,buffer.c_str(),buffer.size(),0);
+        if(ret<0)
+        {
+          perror("send");
+          return false;
+        }
+        return 0;
     }
     
     void Close()
     {
-
+        close(Sock);
+        Sock=-1;
     }
   private:
     int Sock;
