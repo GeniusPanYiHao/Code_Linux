@@ -1,5 +1,10 @@
 #include<stdio.h>
+#include<unistd.h>
 int main()
 {
-  printf("hello world!\n");
+  int i;
+  for(i=0;i<2;i++)
+    fork();
+  printf("hello\n");
+  _exit(0);
 }
