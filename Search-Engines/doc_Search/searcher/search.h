@@ -1,8 +1,10 @@
 #pragma once
 
 #include<string>
+#include<stdint.h>
 #include<vector>
 #include<unordered_map>
+#include"cppjieba/Jieba.hpp"
 
 using std::string;
 using std::vector;
@@ -26,6 +28,7 @@ namespace search
   {
     int64_t docId;
     int weight;
+    string word;
   };
   //:倒排拉链
   typedef vector<Weight> InvertedList;
@@ -45,9 +48,30 @@ namespace search
       //：构建索引
       //inputPath就是指向 raw_input这个文件
       bool build(const string& inputPath);
+      Index();
+      void cutWord(const string& word,vector<string>* tokens);
     private:
       DocInfo* BuildForward(const std::string& line);
       void buildInverted(const DocInfo& docInfo);
+      
+      cppjieba::Jieba jieba;
+  };
 
+  //:搜索模块代码
+  
+  class Search
+  {
+    private:
+      Index* index;
+    public:
+      Search():index(new Index())
+    {
+
+    }
+      bool init(const std::string& inputPath);
+
+      bool search(const std::string query,std::string* result);
+    private:
+      static string generateDesc(const string& content,const string& word);
   };
 }
