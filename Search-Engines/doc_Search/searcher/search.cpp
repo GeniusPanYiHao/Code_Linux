@@ -1,6 +1,7 @@
 #include<iostream>
 #include<fstream>
 #include<algorithm>
+#include<jsoncpp/json/json.h>
 #include "../common/Util.hpp"
 
 #include"search.h"
@@ -148,5 +149,92 @@ namespace search
    {
       jieba.CutForSearch(word,*tokens);
    }
+
+   //:以下是搜索模块的实现
+   
+
+   bool Search::init(const std::string& inputPath)
+   {
+      return index->build(inputPath);
+   }
+
+   bool Search::search(const std::string query,std::string* output)
+   {
+     //：1分词  对查询词进行分词操作
+     vector<string> tokens;
+     index->cutWord(query,&tokens);
+     //：2触发  根据分词结果，查倒排，找到相关文档id
+     vector<Weight> allTokenResult;
+     for(string word : tokens)
+     {
+       boost::to_lower(word);
+       const auto* invertedList=index->getInverted(word);
+       if(invertedList==nullptr)
+       {
+         //:该词在所有文档中都不存在
+         continue;
+       }
+       //:如果倒排拉链不是空的，则可以把这些结果合并到一个大的数组里
+       //为了下一步进行排序，分词结果可能是多个，对应的倒排拉链也有N条
+       //需要把N条拉链合并成一个大的拉链(数组)，然后再针对数组进行排序
+       
+       allTokenResult.insert(allTokenResult.end(),invertedList->begin(),invertedList->end());
+     }
+     //：3排序  根据该词在文档中的权重，对结果进行排序
+     //     按照权重值进行降序排序，需要调用sort的时候指定降序排序
+        std::sort(allTokenResult.begin(),allTokenResult.end(),[](const Weight& w1,const Weight& w2)
+              {
+                return w1.weight>w2.weight;
+              }
+            );
+     //：4构造结果 把最终的结果进行查正排，构造成JSON格式的数据
+     //  为了把结果构造成json格式字符串，需要用到JSON库 jsoncpp
+     //  Json::Value类既可以当成vector，也能当成一个map来使用
+     //  results是最终的搜索结果，里面有N条记录，results相当于一个数组
+        Json::Value results;
+        for(const auto&weight : allTokenResult)
+        {
+          //:weight中只包含docid,咱们需要根据docId在正排索引中查找
+          // 查到相关内容，再构成JSON格式的数据
+          const auto* docInfo=index->getDocInfo(weight.docId);
+          Json::Value result;
+          result["title"]=docInfo->title;
+          result["url"]=docInfo->url;
+          result["desc"]=generateDesc(docInfo->content,weight.word);
+          results.append(result);
+        }
+        //:需要把Json::Value对象转化为字符串，写入到output这个参数中
+        //使用write类把Json::Value转化为字符串
+        //使用Reader类把字符串转化为Json::Value
+        Json::FastWriter writer;
+        *output=writer.write(results);
+        return true;
+   }
+  string Search::generateDesc(const string& content,const string& word)
+  {
+    //:生成描述信息
+    //:把正文中包含word的片段摘取出一部分来作为返回结果
+    //1.先找到word在content中的位置
+    int64_t pos=content.find(word);
+    if(pos==(int64_t)string::npos)
+    {
+      return "";
+    }
+    //2.以该word出现位置为中心，往前找60个字符，以这个位置为基准，再往后找160个字符
+    int64_t begin=pos<60?0:pos-60;
+    if(begin+160>=(int64_t)content.size())
+    {
+      //:如果词出现在末尾，就少截点内容
+      return content.substr(begin);
+    }
+    else
+    {
+      string desc=content.substr(begin,160);
+      desc[desc.size()-1]='.';
+      desc[desc.size()-2]='.';
+      desc[desc.size()-3]='.';
+      return desc;
+     }
+  }
 }
     // end searchcher
