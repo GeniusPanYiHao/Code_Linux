@@ -38,7 +38,7 @@ int main()
 
       resp.set_content(result,"application/json");
       });
-
+      sever.set_base_dir("./wwwroot");
       sever.listen("0.0.0.0",10000);
 
       return 0;
